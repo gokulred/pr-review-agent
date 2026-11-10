@@ -279,7 +279,9 @@ def test_tool_error_goes_back_to_the_model_instead_of_crashing(tmp_path, monkeyp
     monkeypatch.setattr(agent_mod, "structured_llm",
                         lambda schema: RunnableLambda(lambda _: {"parsed": final, "raw": AIMessage("")}))
     review, _ = agent_mod.agent_reviewer("prompt", str(tmp_path))
-    assert review == final and "null character" in seen[0]
+    # The wording differs by OS: "stat: embedded null character in path" on Windows,
+    # "embedded null byte" on Linux
+    assert review == final and "ValueError" in seen[0] and "embedded null" in seen[0]
 
 
 def test_agent_tools_cap_output_and_skip_vendored_dirs(tmp_path):
