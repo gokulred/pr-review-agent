@@ -1,0 +1,1226 @@
+[
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/1",
+    "bug": "empty list passes the `is None` check, ZeroDivisionError on line 11",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 10.2,
+    "tokens": 1085,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/pricing.py",
+        "line": 9,
+        "category": "bug",
+        "severity": "high",
+        "message": "Empty list leads to ZeroDivisionError as the code only checks for None, not for empty list.",
+        "suggestion": "Use `if not orders:` or `if orders is None or not orders:` to return 0.0 for empty or None inputs."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/2",
+    "bug": "SQL injection via f-string query",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 5.31,
+    "tokens": 1005,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/users.py",
+        "line": 5,
+        "category": "security",
+        "severity": "high",
+        "message": "SQL injection vulnerability: email is interpolated directly into the query string, allowing attacker-controlled input to modify the SQL statement.",
+        "suggestion": "Use a parameterized query instead, e.g., conn.execute('SELECT id, name FROM users WHERE email = ?', (email,)).fetchone()"
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/3",
+    "bug": "hardcoded payments API key instead of reading the env var",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 5.42,
+    "tokens": 985,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/payments.py",
+        "line": 9,
+        "category": "security",
+        "severity": "high",
+        "message": "Hardcoded production API key in source code; this exposes credentials and can be exploited.",
+        "suggestion": "Load the API key from environment variables or a secure configuration, and use a test key for local testing."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/4",
+    "bug": "catches ValueError, but a missing dict key raises KeyError, so the default is never returned",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 4.67,
+    "tokens": 867,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 4,
+        "category": "bug",
+        "severity": "medium",
+        "message": "Catching ValueError instead of KeyError means missing settings will raise an uncaught KeyError, breaking the fallback to the default value.",
+        "suggestion": "Replace \"except ValueError:\" with \"except KeyError:\""
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/5",
+    "bug": "range(len(prices) - 1) skips the last item, so the total is too low",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 4.58,
+    "tokens": 1035,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/cart.py",
+        "line": 3,
+        "category": "bug",
+        "severity": "high",
+        "message": "The loop iterates over range(len(prices)-1), skipping the final element of the prices list, so the cart total is incorrect.",
+        "suggestion": "Iterate over the full range: for i in range(len(prices)): or directly for price in prices: total += price"
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/6",
+    "bug": "get_item now returns a tuple, but shop/orders.py:6 still indexes it with [\"qty\"] (TypeError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 5.31,
+    "tokens": 849,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/7",
+    "bug": "pct is now a 0-1 fraction, but shop/orders.py and tests still pass percentages like 10 (ValueError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 6.46,
+    "tokens": 939,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/8",
+    "bug": "find_user renamed, but shop/auth.py:1 still imports find_user (ImportError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 5.22,
+    "tokens": 685,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/9",
+    "bug": "argument order swapped, but shop/app.py:5 still passes settings first (TypeError, unhashable dict)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 8.17,
+    "tokens": 1099,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "medium",
+        "message": "Changing the parameter order of get_setting breaks existing callers that rely on the original (settings, name) signature, leading to TypeError or incorrect behavior.",
+        "suggestion": "Restore the original parameter order (settings, name) or provide a backward\u2011compatible wrapper."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/10",
+    "bug": "SKU keys uppercased, but callers and tests look up \"apple\", which silently returns qty 0",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 5.75,
+    "tokens": 652,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/1",
+    "bug": "empty list passes the `is None` check, ZeroDivisionError on line 11",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 6.99,
+    "tokens": 1078,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/pricing.py",
+        "line": 9,
+        "category": "bug",
+        "severity": "high",
+        "message": "The function now only checks for orders being None; if orders is an empty list, sum/len will raise ZeroDivisionError.",
+        "suggestion": "Add a check for empty list, e.g., if not orders: return 0.0, before the None check."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/2",
+    "bug": "SQL injection via f-string query",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 12.57,
+    "tokens": 989,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/users.py",
+        "line": 5,
+        "category": "security",
+        "severity": "high",
+        "message": "SQL injection vulnerability: email is interpolated directly into the query string.",
+        "suggestion": "Use a parameterized query: conn.execute('SELECT id, name FROM users WHERE email = ?', (email,)).fetchone()"
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/3",
+    "bug": "hardcoded payments API key instead of reading the env var",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 24.98,
+    "tokens": 862,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/payments.py",
+        "line": 9,
+        "category": "security",
+        "severity": "high",
+        "message": "Hardcoding the production payments API key exposes a secret and can lead to credential leakage and unauthorized usage.",
+        "suggestion": "Read the API key from an environment variable (e.g., os.environ[\"PAYMENTS_API_KEY\"]) or a secure secret manager instead of embedding it in the source."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/4",
+    "bug": "catches ValueError, but a missing dict key raises KeyError, so the default is never returned",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 10.14,
+    "tokens": 853,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 4,
+        "category": "bug",
+        "severity": "high",
+        "message": "Catching ValueError instead of KeyError will not handle missing keys, leading to uncaught KeyError exceptions.",
+        "suggestion": "Change except ValueError: to except KeyError:"
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/5",
+    "bug": "range(len(prices) - 1) skips the last item, so the total is too low",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 8.95,
+    "tokens": 938,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/cart.py",
+        "line": 3,
+        "category": "bug",
+        "severity": "high",
+        "message": "The loop iterates only to len(prices)-2, omitting the last price, resulting in an incorrect total calculation.",
+        "suggestion": "Change the loop to for i in range(len(prices)) or iterate directly over prices, e.g., for price in prices: total += price."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/6",
+    "bug": "get_item now returns a tuple, but shop/orders.py:6 still indexes it with [\"qty\"] (TypeError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 28.79,
+    "tokens": 812,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/7",
+    "bug": "pct is now a 0-1 fraction, but shop/orders.py and tests still pass percentages like 10 (ValueError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 33.25,
+    "tokens": 905,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/8",
+    "bug": "find_user renamed, but shop/auth.py:1 still imports find_user (ImportError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 8.32,
+    "tokens": 700,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/9",
+    "bug": "argument order swapped, but shop/app.py:5 still passes settings first (TypeError, unhashable dict)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 16.43,
+    "tokens": 1103,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "medium",
+        "message": "The function signature now expects 'name' before 'settings', which differs from the original order and will break callers that use positional arguments.",
+        "suggestion": "Restore the original parameter order or update all call sites accordingly."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/10",
+    "bug": "SKU keys uppercased, but callers and tests look up \"apple\", which silently returns qty 0",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 10.42,
+    "tokens": 693,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/1",
+    "bug": "empty list passes the `is None` check, ZeroDivisionError on line 11",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 14.94,
+    "tokens": 1087,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/pricing.py",
+        "line": 9,
+        "category": "bug",
+        "severity": "high",
+        "message": "The function only checks for orders being None; an empty list will bypass the check and cause division by zero on line 11.",
+        "suggestion": "Replace the condition with 'if not orders:' to handle both None and empty list, or add an explicit check for empty list."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/2",
+    "bug": "SQL injection via f-string query",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 10.61,
+    "tokens": 1018,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/users.py",
+        "line": 5,
+        "category": "security",
+        "severity": "high",
+        "message": "Directly interpolating user-provided email into SQL query can lead to SQL injection.",
+        "suggestion": "Use a parameterized query: conn.execute(\"SELECT id, name FROM users WHERE email = ?\", (email,)).fetchone()"
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/3",
+    "bug": "hardcoded payments API key instead of reading the env var",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 10.35,
+    "tokens": 865,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/payments.py",
+        "line": 9,
+        "category": "security",
+        "severity": "high",
+        "message": "Hardcoding the production payments API key exposes a secret and can lead to credential leakage. This should never be committed to source control.",
+        "suggestion": "Read the API key from an environment variable (e.g., os.environ[\"PAYMENTS_API_KEY\"]) or a secure secret manager, and use a test key for local development."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/4",
+    "bug": "catches ValueError, but a missing dict key raises KeyError, so the default is never returned",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 9.0,
+    "tokens": 872,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 4,
+        "category": "bug",
+        "severity": "high",
+        "message": "Catching ValueError instead of KeyError means missing keys will raise an uncaught exception, breaking the function.",
+        "suggestion": "Replace ValueError with KeyError."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/5",
+    "bug": "range(len(prices) - 1) skips the last item, so the total is too low",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 9.92,
+    "tokens": 962,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/cart.py",
+        "line": 3,
+        "category": "bug",
+        "severity": "high",
+        "message": "The loop iterates only up to len(prices)-1, skipping the last price, so the total is incorrect.",
+        "suggestion": "Iterate over the full range: for i in range(len(prices)): or directly for price in prices:"
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/6",
+    "bug": "get_item now returns a tuple, but shop/orders.py:6 still indexes it with [\"qty\"] (TypeError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 9.33,
+    "tokens": 910,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/7",
+    "bug": "pct is now a 0-1 fraction, but shop/orders.py and tests still pass percentages like 10 (ValueError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 10.34,
+    "tokens": 1179,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/8",
+    "bug": "find_user renamed, but shop/auth.py:1 still imports find_user (ImportError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 8.44,
+    "tokens": 685,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/9",
+    "bug": "argument order swapped, but shop/app.py:5 still passes settings first (TypeError, unhashable dict)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 9.41,
+    "tokens": 1064,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "medium",
+        "message": "The parameter order of get_setting was changed, which will break existing calls that use positional arguments.",
+        "suggestion": "Restore original parameter order (settings, name, default) or update all call sites accordingly."
+      }
+    ]
+  },
+  {
+    "reviewer": "baseline",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/10",
+    "bug": "SKU keys uppercased, but callers and tests look up \"apple\", which silently returns qty 0",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 4.77,
+    "tokens": 691,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "comments": []
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/1",
+    "bug": "empty list passes the `is None` check, ZeroDivisionError on line 11",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 23.21,
+    "tokens": 3327,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/pricing.py",
+        "line": 9,
+        "category": "bug",
+        "severity": "medium",
+        "message": "The condition `if  orders is None:` does not guard against empty lists, so `sum(orders) / len(orders)` will raise a ZeroDivisionError for `orders = []`.",
+        "suggestion": "Use `if not orders:` or `if orders is None or len(orders) == 0:` to handle both None and empty list cases."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/2",
+    "bug": "SQL injection via f-string query",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 29.05,
+    "tokens": 3302,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/users.py",
+        "line": 5,
+        "category": "security",
+        "severity": "high",
+        "message": "The query is built using an f-string with the email parameter directly interpolated, allowing SQL injection.",
+        "suggestion": "Use a parameterized query: conn.execute(\"SELECT id, name FROM users WHERE email = ?\", (email,)).fetchone()"
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/3",
+    "bug": "hardcoded payments API key instead of reading the env var",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 24.71,
+    "tokens": 2719,
+    "tool_calls": 1,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/payments.py",
+        "line": 9,
+        "category": "security",
+        "severity": "high",
+        "message": "The API key is hardcoded, exposing credentials and allowing unauthorized access. It should be loaded from a secure source such as environment variables.",
+        "suggestion": "Replace the hardcoded string with something like os.environ[\"PAYMENTS_API_KEY\"] and ensure the key is set in the environment."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/4",
+    "bug": "catches ValueError, but a missing dict key raises KeyError, so the default is never returned",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 22.36,
+    "tokens": 3249,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 4,
+        "category": "bug",
+        "severity": "high",
+        "message": "Catching ValueError instead of KeyError means missing keys will raise an uncaught exception, breaking the function's fallback to default.",
+        "suggestion": "Change except ValueError: to except KeyError:"
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/5",
+    "bug": "range(len(prices) - 1) skips the last item, so the total is too low",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 23.88,
+    "tokens": 3328,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/cart.py",
+        "line": 3,
+        "category": "bug",
+        "severity": "medium",
+        "message": "The for loop uses range(len(prices)-1), which skips the last element of the prices list, causing the total to be under-calculated.",
+        "suggestion": "Iterate over the full list, e.g., for i in range(len(prices)) or directly for price in prices: total += price."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/6",
+    "bug": "get_item now returns a tuple, but shop/orders.py:6 still indexes it with [\"qty\"] (TypeError)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 25.49,
+    "tokens": 3677,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/inventory.py",
+        "line": 5,
+        "category": "bug",
+        "severity": "high",
+        "message": "`get_item` returns a tuple (sku, qty) while callers access it as a dict (e.g., `get_item(sku)[\"qty\"]`). This type mismatch will raise a TypeError at runtime.",
+        "suggestion": "Either revert to returning a dict with a \"qty\" field or update all callers to handle the tuple format (e.g., unpack the tuple)."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/7",
+    "bug": "pct is now a 0-1 fraction, but shop/orders.py and tests still pass percentages like 10 (ValueError)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 47.52,
+    "tokens": 5531,
+    "tool_calls": 3,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/pricing.py",
+        "line": 3,
+        "category": "bug",
+        "severity": "high",
+        "message": "The function now validates `pct` to be between 0 and 1, but other code still supplies percentages (0\u2011100). This mismatch will cause runtime errors or wrong discount amounts.",
+        "suggestion": "Update all callers to provide a fractional discount (e.g., divide percentage by 100) or revert the function to accept percentages as before."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/8",
+    "bug": "find_user renamed, but shop/auth.py:1 still imports find_user (ImportError)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 22.75,
+    "tokens": 4431,
+    "tool_calls": 3,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/users.py",
+        "line": 4,
+        "category": "bug",
+        "severity": "high",
+        "message": "The function is renamed but other modules still import and call find_user, causing ImportError or AttributeError at runtime.",
+        "suggestion": "Update all imports and calls to use get_user_by_email, or provide a compatibility alias: find_user = get_user_by_email."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/9",
+    "bug": "argument order swapped, but shop/app.py:5 still passes settings first (TypeError, unhashable dict)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 22.85,
+    "tokens": 4861,
+    "tool_calls": 3,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "high",
+        "message": "The function parameters were reordered, but all call sites still pass arguments in the original order (settings, name, default). This will cause a TypeError or KeyError at runtime because the function will treat the settings dict as the name string.",
+        "suggestion": "Restore the original parameter order (settings, name, default) or update all call sites to match the new signature."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 1,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/10",
+    "bug": "SKU keys uppercased, but callers and tests look up \"apple\", which silently returns qty 0",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 28.96,
+    "tokens": 7077,
+    "tool_calls": 5,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/inventory.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "high",
+        "message": "STOCK keys are now uppercase (\"APPLE\", \"PEAR\") but get_item looks up SKUs case\u2011sensitively using the provided sku (e.g., \"apple\"), resulting in a miss and a quantity of 0.",
+        "suggestion": "Either keep the keys lowercase, or modify get_item to normalize the sku (e.g., sku.upper()) or use a case\u2011insensitive lookup."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/1",
+    "bug": "empty list passes the `is None` check, ZeroDivisionError on line 11",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 30.64,
+    "tokens": 3438,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/pricing.py",
+        "line": 9,
+        "category": "bug",
+        "severity": "high",
+        "message": "The new check only handles orders is None, but an empty list will still cause division by zero when computing average.",
+        "suggestion": "Replace the condition with 'if not orders:' to handle both None and empty list, or add an additional check for empty list."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/2",
+    "bug": "SQL injection via f-string query",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 26.6,
+    "tokens": 2522,
+    "tool_calls": 1,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/users.py",
+        "line": 5,
+        "category": "security",
+        "severity": "high",
+        "message": "The query uses an f-string to embed the email directly, creating a SQL injection vulnerability. Use parameterized queries instead.",
+        "suggestion": "return conn.execute(\"SELECT id, name FROM users WHERE email = ?\", (email,)).fetchone()"
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/3",
+    "bug": "hardcoded payments API key instead of reading the env var",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 21.68,
+    "tokens": 2043,
+    "tool_calls": 0,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/payments.py",
+        "line": 9,
+        "category": "security",
+        "severity": "high",
+        "message": "Hard\u2011coding a production API key (\"pk-prod-7f3a9c2e41b8d6\") exposes a secret credential, allowing unauthorized access to the payments service and risking real charges during testing.",
+        "suggestion": "Read the API key from an environment variable (e.g., os.getenv(\"PAYMENTS_API_KEY\")) and provide a safe fallback or raise an error if not set. Use separate test keys for local development."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/4",
+    "bug": "catches ValueError, but a missing dict key raises KeyError, so the default is never returned",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 21.3,
+    "tokens": 3209,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 4,
+        "category": "bug",
+        "severity": "high",
+        "message": "Catching ValueError instead of KeyError means missing keys will raise an uncaught exception, preventing the function from returning the default value.",
+        "suggestion": "Change except ValueError: to except KeyError:"
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/5",
+    "bug": "range(len(prices) - 1) skips the last item, so the total is too low",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 21.47,
+    "tokens": 3342,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/cart.py",
+        "line": 3,
+        "category": "bug",
+        "severity": "medium",
+        "message": "The for-loop uses range(len(prices)-1), which skips the last element of the prices list, resulting in an undercounted total.",
+        "suggestion": "Iterate over the full list, e.g., for i in range(len(prices)): or simply for price in prices: total += price."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/6",
+    "bug": "get_item now returns a tuple, but shop/orders.py:6 still indexes it with [\"qty\"] (TypeError)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 19.86,
+    "tokens": 4477,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/inventory.py",
+        "line": 5,
+        "category": "bug",
+        "severity": "high",
+        "message": "Function get_item now returns a tuple, but callers (e.g., shop/orders.py) expect a dict with a 'qty' key, leading to runtime errors.",
+        "suggestion": "Return a dict as before or update all callers to handle the tuple format."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/7",
+    "bug": "pct is now a 0-1 fraction, but shop/orders.py and tests still pass percentages like 10 (ValueError)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 16.79,
+    "tokens": 5403,
+    "tool_calls": 3,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/pricing.py",
+        "line": 5,
+        "category": "bug",
+        "severity": "high",
+        "message": "Function now expects a fractional discount but callers still provide percentages, causing runtime errors or wrong price calculations.",
+        "suggestion": "Update all call sites to pass a fraction (e.g., divide percentage by 100) or revert to the original 0\u2011100 API and add backward\u2011compatible handling."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/8",
+    "bug": "find_user renamed, but shop/auth.py:1 still imports find_user (ImportError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 21.69,
+    "tokens": 3256,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": []
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/9",
+    "bug": "argument order swapped, but shop/app.py:5 still passes settings first (TypeError, unhashable dict)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 21.43,
+    "tokens": 2670,
+    "tool_calls": 1,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "high",
+        "message": "The function signature was changed to (name, settings, default) but existing call sites (e.g., get_setting(settings, \"currency\", \"INR\")) still pass settings first, leading to TypeError or incorrect behavior.",
+        "suggestion": "Restore original parameter order or update all call sites to match the new signature."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 2,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/10",
+    "bug": "SKU keys uppercased, but callers and tests look up \"apple\", which silently returns qty 0",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 19.15,
+    "tokens": 5257,
+    "tool_calls": 3,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/inventory.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "medium",
+        "message": "The new STOCK dictionary uses uppercase keys (\"APPLE\", \"PEAR\"), but get_item and other code look up SKUs using the original case (e.g., \"apple\"). This mismatch will cause lookups to fail and return a quantity of 0 for existing items.",
+        "suggestion": "Normalize the SKU argument to uppercase before lookup (e.g., STOCK.get(sku.upper(), 0)) or keep the keys case\u2011insensitive, or revert to the original lowercase keys."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/1",
+    "bug": "empty list passes the `is None` check, ZeroDivisionError on line 11",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 16.26,
+    "tokens": 3287,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/pricing.py",
+        "line": 9,
+        "category": "bug",
+        "severity": "high",
+        "message": "Missing handling for empty list leads to division by zero.",
+        "suggestion": "Replace the condition with 'if not orders:' or add an additional check for empty list before computing the average."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/2",
+    "bug": "SQL injection via f-string query",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 10.72,
+    "tokens": 3302,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/users.py",
+        "line": 5,
+        "category": "security",
+        "severity": "high",
+        "message": "The query uses string interpolation with user-provided email, leading to SQL injection vulnerability.",
+        "suggestion": "Use a parameterized query: conn.execute(\"SELECT id, name FROM users WHERE email = ?\", (email,)).fetchone()"
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/3",
+    "bug": "hardcoded payments API key instead of reading the env var",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 7.75,
+    "tokens": 2636,
+    "tool_calls": 1,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/payments.py",
+        "line": 9,
+        "category": "security",
+        "severity": "high",
+        "message": "The API key is hardcoded as a production secret, which can be leaked and used maliciously. It should be loaded from a secure environment variable instead.",
+        "suggestion": "Replace the hardcoded key with os.environ[\"PAYMENTS_API_KEY\"] or a secret manager lookup."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/4",
+    "bug": "catches ValueError, but a missing dict key raises KeyError, so the default is never returned",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 10.34,
+    "tokens": 3256,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 4,
+        "category": "bug",
+        "severity": "high",
+        "message": "Catching the wrong exception type (`ValueError`) means a missing key will not be handled and will propagate as an error, breaking the fallback behavior.",
+        "suggestion": "Replace `except ValueError:` with `except KeyError:` to correctly handle missing dictionary keys."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/5",
+    "bug": "range(len(prices) - 1) skips the last item, so the total is too low",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 9.15,
+    "tokens": 3310,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/cart.py",
+        "line": 3,
+        "category": "bug",
+        "severity": "medium",
+        "message": "The loop uses range(len(prices)-1), which skips the last element of the prices list, resulting in an undercounted total.",
+        "suggestion": "Iterate over the full range: for i in range(len(prices)): or simply for price in prices: total += price."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/6",
+    "bug": "get_item now returns a tuple, but shop/orders.py:6 still indexes it with [\"qty\"] (TypeError)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 8.97,
+    "tokens": 3708,
+    "tool_calls": 2,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/inventory.py",
+        "line": 5,
+        "category": "bug",
+        "severity": "high",
+        "message": "get_item now returns a tuple (sku, qty) but other code (e.g., shop/orders.py) accesses the result as a dict with ['qty'], leading to a TypeError at runtime.",
+        "suggestion": "Either keep returning a dict or update all callers to handle the tuple, e.g., unpack the result or access by index."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/7",
+    "bug": "pct is now a 0-1 fraction, but shop/orders.py and tests still pass percentages like 10 (ValueError)",
+    "caught": false,
+    "false_positives": 0,
+    "latency_s": 9.63,
+    "tokens": 5247,
+    "tool_calls": 3,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": []
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/8",
+    "bug": "find_user renamed, but shop/auth.py:1 still imports find_user (ImportError)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 10.19,
+    "tokens": 4421,
+    "tool_calls": 3,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/users.py",
+        "line": 4,
+        "category": "bug",
+        "severity": "medium",
+        "message": "The function is renamed to get_user_by_email, but other code (e.g., shop/auth.py) still imports and calls find_user, leading to ImportError or AttributeError at runtime.",
+        "suggestion": "Update all imports and calls to use get_user_by_email, or provide a backward\u2011compatible alias for find_user."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/9",
+    "bug": "argument order swapped, but shop/app.py:5 still passes settings first (TypeError, unhashable dict)",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 8.03,
+    "tokens": 2600,
+    "tool_calls": 1,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/config.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "high",
+        "message": "The get_setting function signature was changed to (name, settings, default) but existing code calls it with (settings, name, default), causing type errors or incorrect behavior.",
+        "suggestion": "Restore original parameter order (settings, name, default) or update all call sites accordingly."
+      }
+    ]
+  },
+  {
+    "reviewer": "agent",
+    "run": 3,
+    "pr": "https://github.com/gokulred/review-sandbox/pull/10",
+    "bug": "SKU keys uppercased, but callers and tests look up \"apple\", which silently returns qty 0",
+    "caught": true,
+    "false_positives": 0,
+    "latency_s": 8.75,
+    "tokens": 4241,
+    "tool_calls": 3,
+    "provider_errors": 0,
+    "model": "openai/gpt-oss-120b",
+    "comments": [
+      {
+        "file": "shop/inventory.py",
+        "line": 1,
+        "category": "bug",
+        "severity": "medium",
+        "message": "Changing STOCK keys to uppercase breaks get_item lookup for lowercase SKU strings, causing items to be reported as out of stock.",
+        "suggestion": "Normalize the sku argument to uppercase before lookup (e.g., STOCK.get(sku.upper(), 0)) or keep the keys case-insensitive."
+      }
+    ]
+  }
+]

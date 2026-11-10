@@ -1,0 +1,67 @@
+# One planted bug per PR. The reviewer "catches" it with a comment on `file` at `line`
+# (or any of `lines`, when the bug spans several changed lines).
+- pr: https://github.com/gokulred/review-sandbox/pull/1
+  file: shop/pricing.py
+  line: 9
+  category: bug
+  bug: empty list passes the `is None` check, ZeroDivisionError on line 11
+
+- pr: https://github.com/gokulred/review-sandbox/pull/2
+  file: shop/users.py
+  line: 5
+  category: security
+  bug: SQL injection via f-string query
+
+- pr: https://github.com/gokulred/review-sandbox/pull/3
+  file: shop/payments.py
+  line: 9
+  category: security
+  bug: hardcoded payments API key instead of reading the env var
+
+- pr: https://github.com/gokulred/review-sandbox/pull/4
+  file: shop/config.py
+  line: 4
+  category: bug
+  bug: catches ValueError, but a missing dict key raises KeyError, so the default is never returned
+
+- pr: https://github.com/gokulred/review-sandbox/pull/5
+  file: shop/cart.py
+  line: 3
+  category: bug
+  bug: range(len(prices) - 1) skips the last item, so the total is too low
+
+# Cross-file bugs: the PR changes one file, the breakage is in a file the PR doesn't touch.
+- pr: https://github.com/gokulred/review-sandbox/pull/6
+  kind: cross-file
+  file: shop/inventory.py
+  lines: [4, 5]
+  category: bug
+  bug: get_item now returns a tuple, but shop/orders.py:6 still indexes it with ["qty"] (TypeError)
+
+- pr: https://github.com/gokulred/review-sandbox/pull/7
+  kind: cross-file
+  file: shop/pricing.py
+  lines: [2, 3, 4, 5]
+  category: bug
+  bug: pct is now a 0-1 fraction, but shop/orders.py and tests still pass percentages like 10 (ValueError)
+
+- pr: https://github.com/gokulred/review-sandbox/pull/8
+  kind: cross-file
+  file: shop/users.py
+  line: 4
+  category: bug
+  bug: find_user renamed, but shop/auth.py:1 still imports find_user (ImportError)
+
+- pr: https://github.com/gokulred/review-sandbox/pull/9
+  kind: cross-file
+  file: shop/config.py
+  line: 1
+  category: bug
+  bug: argument order swapped, but shop/app.py:5 still passes settings first (TypeError, unhashable dict)
+
+- pr: https://github.com/gokulred/review-sandbox/pull/10
+  kind: cross-file
+  file: shop/inventory.py
+  line: 1
+  category: bug
+  bug: SKU keys uppercased, but callers and tests look up "apple", which silently returns qty 0

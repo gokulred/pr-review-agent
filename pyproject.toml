@@ -1,0 +1,30 @@
+[project]
+name = "pr-review-agent"
+version = "0.1.0"
+description = "LLM agent that reviews Python pull requests for bugs and security issues"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx",
+    "unidiff",
+    "pydantic>=2",
+    "langchain-core",
+    "langchain-google-genai",
+    "langchain-groq",
+    "langgraph>=1.2",
+    "python-dotenv",
+    "pyyaml",
+    "streamlit>=1.50",
+    # run as review tools, not just dev linters
+    "ruff",
+    "mypy",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
