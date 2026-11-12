@@ -61,6 +61,7 @@ def test_post_button_posts_once_then_shows_the_link(monkeypatch):
     monkeypatch.setattr(reviewer.github_client, "post_review",
                         lambda *args: posts.append(args) or "https://github.com/me/sandbox/pull/1#review")
     monkeypatch.setenv("ALLOWED_REPOS", "me/sandbox")
+    monkeypatch.setenv("ENABLE_POSTING", "1")
     at = AppTest.from_file(APP, default_timeout=60).run()
     at.text_input[0].input("https://github.com/me/sandbox/pull/1")
     at.button[0].click().run()
@@ -69,3 +70,20 @@ def test_post_button_posts_once_then_shows_the_link(monkeypatch):
     assert len(posts) == 1
     assert not any(b.label == "Post comments to GitHub" for b in at.button)  # replaced by the link
     assert any("view on GitHub" in s.value for s in at.success)
+
+
+def test_post_button_hidden_unless_posting_is_enabled(monkeypatch):
+    import reviewer.baseline
+
+    comment = {"file": "a.py", "line": 1, "category": "bug", "severity": "high", "message": "m", "suggestion": ""}
+    monkeypatch.setattr(reviewer.baseline, "review", lambda url, reviewer, progress: {
+        "pr": {"url": url, "head_sha": "abc", "patches": {}},
+        "review": {"summary": "s", "comments": [comment]},
+        "metrics": {"latency_s": 1.0, "input_tokens": 1, "output_tokens": 1}})
+    monkeypatch.setenv("ALLOWED_REPOS", "me/sandbox")
+    monkeypatch.setenv("ENABLE_POSTING", "")  # set but off, so a local .env can't turn it on
+    at = AppTest.from_file(APP, default_timeout=60).run()
+    at.text_input[0].input("https://github.com/me/sandbox/pull/1")
+    at.button[0].click().run()
+    assert not at.exception
+    assert not any(b.label == "Post comments to GitHub" for b in at.button)

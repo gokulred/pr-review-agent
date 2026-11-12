@@ -1,9 +1,9 @@
 """Streamlit UI for the PR review agent.
 
 Run: streamlit run app.py
-Env: ALLOWED_REPOS=owner/repo,owner/repo2 limits which repos can be reviewed. It is also required
-for posting, so a public deploy can't post as your token to arbitrary repos. With neither it nor
-ALLOW_ANY_REPO=1 set, reviews are disabled.
+Env: ALLOWED_REPOS=owner/repo,owner/repo2 limits which repos can be reviewed. With neither it nor
+ALLOW_ANY_REPO=1 set, reviews are disabled. Posting reviews to GitHub needs ENABLE_POSTING=1 and only
+works for repos in ALLOWED_REPOS, so a public deploy can't post under your token's account.
 """
 import json
 import os
@@ -107,7 +107,9 @@ def show_result(name: str, res: dict) -> None:
         with st.expander("Agent tool calls"):
             st.code("\n".join(m["tool_calls"]), language="text")
 
-    if not (comments and repo_of(res["pr"]["url"]) in allowed_repos()):
+    # Posting is off unless ENABLE_POSTING=1: a public demo must not post under the token owner's account
+    posting = os.environ.get("ENABLE_POSTING") == "1"
+    if not (posting and comments and repo_of(res["pr"]["url"]) in allowed_repos()):
         return
     posted_key = f"posted-{name}-{res['pr']['url']}-{res['pr']['head_sha']}"  # one post per review
     if link := st.session_state.get(posted_key):

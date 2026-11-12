@@ -61,7 +61,7 @@ Both reviewers get the same prompt and the same diff, so the comparison is fair.
 - **Agent guards.** At most 8 turns, a repeated tool call ends exploration, tool output is capped at 3,000 characters, tools can't read outside the checkout, and a tool error is passed back to the model instead of crashing the review.
 - **Structured output in a separate step.** The final review comes from a fresh call that gets the agent's notes, not the raw tool-call history, because not every provider accepts that history. Groq uses JSON-schema mode, because gpt-oss in function-calling mode sometimes calls a tool that doesn't exist.
 - **Free-tier resilience.** Groq first, then a list of Gemini models, each with its own daily quota. Rate-limit errors are retried; timeouts fail over right away. A provider that fails is skipped for the rest of that review. When every provider fails, all their errors are reported, not just the first.
-- **Safe to deploy.** The app refuses to review anything until `ALLOWED_REPOS` is set, runs at most 2 reviews at once, and posts each review to GitHub only once.
+- **Safe to deploy.** The app refuses to review anything until `ALLOWED_REPOS` is set, runs at most 2 reviews at once, and only shows the Post button when `ENABLE_POSTING=1` is set, posting each review to GitHub only once.
 
 ## Limitations
 
@@ -103,6 +103,7 @@ docker run --rm -p 8501:8501 --env-file .env pr-review-agent
 | `GROQ_API_KEY`, `GEMINI_API_KEY` | LLM keys. At least one is needed; Groq is tried first. |
 | `GITHUB_TOKEN` | Read-only is enough to review. Posting needs pull-request write access. |
 | `ALLOWED_REPOS` | Repos the app may review and post to, for example `owner/repo`. Without it, reviews are disabled. |
+| `ENABLE_POSTING=1` | Shows the "Post comments to GitHub" button (for repos in `ALLOWED_REPOS`). Leave it unset on a public demo, so visitors can't post under your account. |
 | `ALLOW_ANY_REPO=1` | Local use only: review any repo. |
 | `GROQ_MODEL`, `GEMINI_MODEL` | Model overrides. `GEMINI_MODEL` takes a comma-separated list, tried in order. |
 
