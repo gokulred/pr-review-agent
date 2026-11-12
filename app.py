@@ -134,7 +134,7 @@ if h := headline(rows, cross_file_prs(mtime(GROUND_TRUTH))):  # None unless both
     c3.metric(f"Cross-file bugs (of {h['cross_prs']}): agent vs baseline",
               f"{h['agent_cross']:.1f} vs {h['baseline_cross']:.1f}")
 
-tab_review, tab_eval, tab_how = st.tabs(["Review a PR", "Eval results", "How it works"])
+tab_review, tab_eval = st.tabs(["Review a PR", "Eval results"])
 
 with tab_review:
     allowed = sorted(allowed_repos())
@@ -198,25 +198,3 @@ with tab_eval:
                                                          format="%d"),
             },
         )
-
-with tab_how:
-    st.graphviz_chart("""
-digraph {
-  rankdir=LR; node [shape=box, style=rounded, fontname="sans-serif"];
-  START [shape=circle, label=""]; END [shape=doublecircle, label=""];
-  START -> agent;
-  agent -> tools [label="tool calls"];
-  tools -> agent;
-  agent -> final [label="done, repeated call,\\nor 8 turns"];
-  final -> END;
-}""")
-    st.markdown("""
-1. **Fetch** the PR and its diff from the GitHub API, then shallow-clone the PR head.
-2. **Static analysis:** run `ruff` (bug and security rules only) and `mypy` on the changed files, keeping only findings on added lines.
-3. **Agent loop (LangGraph):** the LLM reads the diff and calls `search_code` / `read_file` to check callers and definitions.
-4. **Final review:** a separate call turns what the agent found into a validated Pydantic `Review`.
-5. **Filter:** drop comments that point at lines outside the diff, because GitHub would reject them.
-
-**Safety:** the PR's code is never run. Tools can't read outside the checkout or inside `.git`.
-Ruff and mypy ignore the repo's own config files.
-""")
