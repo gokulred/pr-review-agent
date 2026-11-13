@@ -6,13 +6,11 @@ An LLM agent that reviews Python pull requests for **bugs and security issues**.
 
 Every design change was measured against a set of pull requests with planted bugs, comparing the agent with a single-prompt baseline.
 
-![Streamlit app: on PR #6 the baseline finds nothing, while the agent searches for callers and flags the broken return type](docs/screenshot.jpg)
 ## Demo
-
-
 
 https://github.com/user-attachments/assets/a7ad9bb6-4f33-4846-abc2-c0aceee387ac
 
+![Streamlit app: on PR #6 the baseline finds nothing, while the agent searches for callers and flags the broken return type](docs/screenshot.jpg)
 
 ## Results
 
